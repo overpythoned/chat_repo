@@ -2,6 +2,8 @@
 # Contains all routins on users - creation, deletion,
 # getting information about users
 
+import os
+
 # Directory path to users database + name of file
 # Later it will be changed with the help of os module
 # On my desktop
@@ -26,7 +28,7 @@ class Users():
         self.username_bag = set()
         
         # Fullfill containers
-        with open(USERS_DATABASE, encoding='utf-8') as user_file:
+        with open(EEE_USERS_DATABASE, encoding='utf-8') as user_file:
             for line in user_file:
                 split_line = line.split(sep=',')
                 self.user_bag[int(split_line[0])] = {'username':split_line[1]}
@@ -36,9 +38,9 @@ class Users():
     def createUser(self):
         '''User creation routine'''
         username = input('Input Username\n')
-        # Check if username already exists
+        # Check if usernameusername already exists
         if username not in self.username_bag:
-            with open(USERS_DATABASE,
+            with open(EEE_USERS_DATABASE,
                       mode='a', encoding='utf-8') as user_file:
                 if self.userid_bag:
                     new_id = max(self.userid_bag) + 1
@@ -52,7 +54,24 @@ class Users():
         elif username in self.username_bag:
             print('Username occupied')
 
-    
+
+class User:
+    ''' 
+    Authorize user, "hello" to MessagesHandler , Receiving information about the rooms, Enter the room, Send Message
+    '''
+    # Check for other users talking to server, hello if not
+    def __init__(self, userid):
+        while True:
+            if not 'hello.log' in os.listdir():
+                os.chdir('/home/mikhail/Karma/chat/pipes')
+                pipein = open('hello', 'w')
+                pipein.write('hello\n')
+                pipein.close()
+                print('Hello sent!')
+                break
+       
+
+
 if __name__ == '__main__':
     print('Start testing')
     user1 = Users()
