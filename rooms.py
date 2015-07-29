@@ -4,14 +4,15 @@
 # Directory path to users database + name of file
 # Later it will be changed with the help of os module
 # On my desktop
-ROOMS_DATABASE = '/Users/mikhail/Documents/Progs/chat/rooms'
+ROOMS_DATABASE = '/Users/mikhail/Documents/Progs/chat/rooms_db'
 # On my laptop 
-EEE_ROOMS_DATABASE = '/home/mikhail/Karma/chat/rooms'
+EEE_ROOMS_DATABASE = '/home/mikhail/Karma/chat/rooms_db'
 
 class Rooms:
     '''This class is for room operations - creation, management, etc.'''
     def __init__(self):
-        # Container for rooms, {id:{'roomname':roomname, ...}, ...}
+        # Container for rooms, 
+        # {id:{'roomname':roomname, 'users':{user1_id, user2_id, ...}}, ...}
         self.room_bag = {}
 
         # Container for room Id's
@@ -25,6 +26,8 @@ class Rooms:
             for line in room_file:
                 split_line = line.split(sep=',')
                 self.room_bag[int(split_line[0])] = {'roomname':split_line[1]}
+                self.room_bag[int(split_line[0])]['users'] = \
+                    set(split_line[2:]).difference('\n') # minus '\n' element included in split_line
                 self.roomid_bag.add(int(split_line[0]))
                 self.roomname_bag.add(split_line[1])
 
