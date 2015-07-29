@@ -1,0 +1,54 @@
+# Instructions container
+import _thread
+
+INSTRUCTIONS_BAG = {}
+
+# Path to pipes directory
+PIPES = '/home/mikhail/Karma/chat/pipes/'
+
+def send_to_room(parsed, self_Instructions):
+    """Send message instruction, uses single receiver function"""
+    # This variant is bad, cause of parsed[1], if we want to change
+    # the order of elements in message, we will change this numbers
+    # in many different places
+    user_id = int(parsed[1])
+    room_id = int(parsed[2])
+    message = parsed[3]
+    receivers = \
+    (self_Instructions.room_bag[room_id]['users']).difference(str(user_id))
+
+
+    for receiver in receivers:
+        def send_single(sender, receiver, room_id, message):
+            with open(PIPES + 'server-' + str(receiver), 'w') as pipein:
+                pipein.write(str(sender) + str(',') + str(room_id) + 
+                             str(',') + message)
+        _thread.start_new_thread(send_single, (user_id, receiver, room_id, message))
+
+INSTRUCTIONS_BAG['SR'] = send_to_room
+
+class Instructions:
+    """Class for parsing and performing received instructions"""
+    def __init__(self, user_id, user_bag, room_bag):
+        # Check for user in user_bag
+        if not user_id in user_bag.keys(): 
+            print('Error: user_id doesnt exist')
+        else:
+            # Create attributes
+            self.user_id = user_id
+            self.user_bag = user_bag
+            self.room_bag = room_bag
+
+    def parse(self, instruction):
+        """Instruction parser, return parsed instruction"""
+        self.parsed = instruction.split(sep=',')
+        self.tag = self.parsed[0]
+        return self.parsed
+    
+    def perform(self, instruction):
+        """Instruction slave"""
+        parsed = instruction.split(sep=',')
+        for teg in INSTRUCTIONS_BAG.keys():
+            if parsed[0] == teg:
+                INSTRUCTIONS_BAG[teg](parsed, self)
+                break
