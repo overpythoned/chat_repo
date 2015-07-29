@@ -1,4 +1,5 @@
 # Messages operations module
+# Prepare message delivering infrustructure
 
 import os
 import time
@@ -9,11 +10,17 @@ PIPES = '/home/mikhail/Karma/chat/pipes/'
 def create_hello_pipe():
     """Create "hello" pipe to user-server interactions"""
     # Create hello pipe if it doesn't exist
-    if not 'hello' in os.listdir() : os.mkfifo('hello')
-    
-    with open('hello', 'r') as pipeout:
-        return pipeout.readline()
+    os.chdir(PIPES)
+    if not 'hello' in os.listdir() : os.mkfifo(PIPES + 'hello')
 
+def get_hello():
+    """
+    Listen for hello in hello_pipe, return tuple (True, user_id) or
+    (False, user_id)
+    """
+    with open(PIPES + 'hello', 'r') as pipeout:
+        return pipeout.readline()
+ 
 def create_user_pipe(user_id):
     """
     Create user pipes pair - one for receiving instructions
@@ -24,22 +31,10 @@ def create_user_pipe(user_id):
         # Create pipe for receiving instructions from user
         os.mkfifo(str(user_id) + '-server')
         # Create pipe for sending information to user
-        os.mkfifo('server-' + str(user_id))    
+        os.mkfifo('server-' + str(user_id))
 
-
-class Instructions:
-    """Class for parsing and performing received instructions"""
-    def __init__(self, user_id, user_bag):
-        # Check for user in user_bag
-        if not user_id in user_bag.keys(): 
-            print('Error: user_id doesnt exist')
-        else:
-            # Create attributes
-            self.user_id = user_id
-            self.user_bag = user_bag
-
-    def parse(self, instruction):
-        """Instruction parser, return parsed instruction"""
-        self.parsed = instruction.split(sep=',')
-        self.tag = self.parsed[0]
-        return self.parsed
+def read_from_pipe(user_id):
+    """ Read and return one message from user-server pipe"""
+    os.chdir(PIPES)
+    with open(str(user_id) + '-server', 'r') as pipeout:
+        return pipeout.readline()
