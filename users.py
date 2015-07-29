@@ -57,18 +57,33 @@ class Users():
 
 class User:
     ''' 
-    Authorize user, "hello" to MessagesHandler , Receiving information about the rooms, Enter the room, Send Message
+    Authorize user, "hello" to MessagesHandler, Receiving information about the rooms, Enter the room, Send Message
     '''
     # Check for other users talking to server, hello if not
     def __init__(self, userid):
+        self.user_id = userid
         while True:
             if not 'hello.log' in os.listdir():
                 os.chdir('/home/mikhail/Karma/chat/pipes')
                 pipein = open('hello', 'w')
-                pipein.write('hello\n')
+                pipein.write('hello')
                 pipein.close()
                 print('Hello sent!')
                 break
+# new new new
+    # Read a message from server-user pipe
+    def read_from_pipe(self):
+        with open('server-' + str(self.user_id), 'r') as pipeout:
+            output = pipeout.read()
+            print(output)
+            return output
+
+    # Send message to a single room
+    def send_to_room(self, room_id, message):
+        with open(str(self.user_id) + '-server', 'w') as pipein:
+            pipein.write('SR,' + str(self.user_id) + ',' + str(room_id)
+                         + ',' + message)
+            print(message)
        
 
 
