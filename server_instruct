@@ -1,0 +1,36 @@
+# Server instructions handler
+
+import _thread
+
+SERVER_INSTRUCTIONS_BAG = {}
+
+# Path to pipes directory
+PIPES = '/home/mikhail/Karma/chat/pipes/'
+
+def read_message(parsed, self_Instructions):
+    """Read message from room"""
+    sender = int(parsed[1])
+    room_id = int(parsed[2])
+    message = parsed[3]
+    print(sender + ': ' + message)
+
+SERVER_INSTRUCTIONS_BAG['SR'] = read_message
+
+class Instructions:
+    """Class for parsing and performing received instructions"""
+    def __init__(self):
+        pass
+    # Read message from room
+    def parse(self, instruction):
+        """Instruction parser, return parsed instruction"""
+        self.parsed = instruction.split(sep=',')
+        self.tag = self.parsed[0]
+        return self.parsed
+    
+    def perform(self, instruction):
+        """Instruction slave"""
+        parsed = instruction.split(sep=',')
+        for teg in SERVER_INSTRUCTIONS_BAG.keys():
+            if parsed[0] == teg:
+                SERVER_INSTRUCTIONS_BAG[teg](parsed, self)
+                break
